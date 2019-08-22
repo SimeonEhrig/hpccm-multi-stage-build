@@ -1,2 +1,4 @@
 build
 install
+
+single-stage/singularity.sif
