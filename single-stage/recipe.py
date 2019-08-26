@@ -13,7 +13,11 @@ def get_stage(container):
     Stage0 += baseimage(image='ubuntu:bionic')
 
     # copy project from outside in the container
-    Stage0 += copy(src='../hello_world_tool', dest='/opt/')
+    if container == 'singularity':
+        Stage0 += copy(src='../hello_world_tool', dest='/opt/')
+    else:
+        # docker
+        Stage0 += copy(src='./hello_world_tool', dest='/opt/hello_world_tool')
 
     # install compiler tools
     Stage0 += cmake(eula=True)
@@ -37,7 +41,7 @@ def get_stage(container):
 def main():
 
     parser = argparse.ArgumentParser(
-        description='Build commands:\n sudo singularity build single-stage.sif singularity.def\n singularity build --fake-root single-stage.sif singularity.def\n cd .. && docker build -f single-stage/Dockerfile -t single-stage:dev . && cd single-stage\n\nRun commands:\n ./singularity\n docker run single-stage:dev',
+        description='Build commands:\n sudo singularity build single-stage.sif singularity.def\n singularity build --fakeroot single-stage.sif singularity.def\n cd .. && docker build -f single-stage/Dockerfile -t single-stage:dev . && cd single-stage\n\nRun commands:\n ./singularity\n docker run single-stage:dev',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.parse_args()
 

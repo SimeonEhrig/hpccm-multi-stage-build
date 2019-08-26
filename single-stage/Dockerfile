@@ -1,6 +1,6 @@
 FROM ubuntu:bionic
 
-COPY ../hello_world_tool /opt/
+COPY ./hello_world_tool /opt/hello_world_tool
 
 # CMake version 3.12.3
 RUN apt-get update -y && \
