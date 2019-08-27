@@ -6,7 +6,7 @@ From: ubuntu:bionic
 %files
     ../hello_world_tool /opt/
 
-# CMake version 3.12.3
+# CMake version 3.14.5
 %post
     apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -14,21 +14,33 @@ From: ubuntu:bionic
     rm -rf /var/lib/apt/lists/*
 %post
     cd /
-    mkdir -p /var/tmp && wget -q -nc --no-check-certificate -P /var/tmp https://cmake.org/files/v3.12/cmake-3.12.3-Linux-x86_64.sh
-    /bin/sh /var/tmp/cmake-3.12.3-Linux-x86_64.sh --prefix=/usr/local --skip-license
-    rm -rf /var/tmp/cmake-3.12.3-Linux-x86_64.sh
+    mkdir -p /var/tmp && wget -q -nc --no-check-certificate -P /var/tmp https://cmake.org/files/v3.14/cmake-3.14.5-Linux-x86_64.sh
+    /bin/sh /var/tmp/cmake-3.14.5-Linux-x86_64.sh --prefix=/usr/local --skip-license
+    rm -rf /var/tmp/cmake-3.14.5-Linux-x86_64.sh
 
 %post
     apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
         g++ \
-        make
+        make \
+        wget
     rm -rf /var/lib/apt/lists/*
 
 %post
     cd /
     mkdir -p /opt/build_hello_world_tool && cd /opt/build_hello_world_tool && cmake -DCMAKE_INSTALL_PREFIX=/usr/local /opt/hello_world_tool/
     cmake --build /opt/build_hello_world_tool --target install -- -j$(nproc)
+
+%post
+    cd /
+    mkdir -p /opt/openssl_build && wget -q -nc --no-check-certificate -P /opt/openssl_build https://www.openssl.org/source/openssl-1.1.1c.tar.gz
+    mkdir -p /opt/openssl_build && tar -x -f /opt/openssl_build/openssl-1.1.1c.tar.gz -C /opt/openssl_build -z
+    cd /opt/openssl_build/openssl-1.1.1c
+    ./config -Wl,-rpath=/usr/local/lib
+    make -j
+    make install -j
+    cd -
 
 %runscript
     exec hello_world_tool "$@"
